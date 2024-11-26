@@ -3,8 +3,6 @@ import { useState } from 'react';
 
 function NumberInput(props)
 {
-
-
     function numberInputHandler(inputNum)
     {
         console.log("input is ", inputNum);
