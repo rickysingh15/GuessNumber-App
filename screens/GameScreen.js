@@ -1,33 +1,68 @@
-import { StyleSheet, Text, View, TextInput } from "react-native";
-import PrimaryButton from "../components/PrimaryButton";
+import { StyleSheet, Text, View, TextInput, Alert } from "react-native";
+import { useState } from "react";
 
-function GameScreen({onGameFinished})
+import PrimaryButton from "../components/ui/PrimaryButton";
+import Title from "../components/ui/Title";
+import NumberContainer from "../components/game/NumberContainer";
+
+function generateRandomNumber(min,max,exclude)
 {
+    const rndNum = Math.floor(Math.random()*(max-min))+min;
 
-    function quitToMenuHandler()
+    if(rndNum==exclude)
     {
-        onGameFinished(true);
+        return generateRandomNumber(min,max,exclude);
+    }
+    else return rndNum;
+}
+
+let minNum = 1;
+let maxNum = 100;
+
+function GameScreen({userNumber})
+{   
+    const initialGuess = generateRandomNumber(1,100,userNumber)
+    const [currentGuess, setCurrentGuess] = useState(initialGuess);
+
+    function nextGuessHandler(direction)
+    {
+        if((direction == 'lower' && currentGuess < userNumber)
+            || (direction == 'higher' && currentGuess > userNumber))
+            {
+                Alert.alert("Don't lie!","You know that this is wrong...",[{text: 'Okay', style: 'destructive'}]);
+                return;
+            }
+
+        if(direction == 'lower')
+        {
+            maxNum = currentGuess-1;
+        }
+        else if(direction == 'higher')
+        {
+            minNum = currentGuess+1;
+        }
+
+        console.log(minNum, " ", maxNum);
+
+        let nextGuess = generateRandomNumber(minNum,maxNum,currentGuess);
+        setCurrentGuess(nextGuess);
     }
 
-    return (
-        <View>
-            <Text style={styles.textContainer}>Game Screen</Text>
-            <View style={styles.controlsContainer}>
-                <TextInput style={styles.numberInput}
-                            maxLength={2}
-                            keyboardType='number-pad'
-                            />
 
-                <View style={styles.buttonsContainer}>
-                    <View>
-                        <PrimaryButton>Reset</PrimaryButton>
-                    </View>
-                    <View>
-                        <PrimaryButton onPress={quitToMenuHandler}>Quit</PrimaryButton>
-                    </View>
+    return (
+        <View style={styles.screen}>
+            <Title>Opponent's Guess</Title>
+            <NumberContainer>{currentGuess}</NumberContainer>
+            <View style={styles.buttonsContainer}>
+                <View>
+                    <PrimaryButton onPress={nextGuessHandler.bind(this, 'lower')}>lower</PrimaryButton>
+                </View>
+                <View>
+                    <PrimaryButton onPress={nextGuessHandler.bind(this, 'higher')}>Higher</PrimaryButton>
                 </View>
             </View>
-        </View>
+        </View>       
+
     );
 }
 
@@ -35,35 +70,13 @@ export default GameScreen;
 
 const styles = StyleSheet.create({
 
-    rootContainer:{
+    screen:{
         flex:1,
-        flexDirection: 'column'
+        padding: 24
     },
-
-    textContainer:{
-        marginTop: 60,
-        marginHorizontal: 80,
-        fontSize: 32
-    },
-
-    controlsContainer:{
-        marginTop: 80,
-        padding: 16,
-        backgroundColor: '#3b021f',
-        marginHorizontal: 24,
-        borderRadius: 8
-    },
-
-    numberInput:{
-        height: 40,
-        width: '80%',
-        marginHorizontal: 20,
-        alignSelf: 'center'
-    },
-    
     buttonsContainer:{
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-around'
     }
 
 });
