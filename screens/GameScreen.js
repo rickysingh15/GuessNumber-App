@@ -4,9 +4,18 @@ import { useState } from "react";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import Title from "../components/ui/Title";
 import NumberContainer from "../components/game/NumberContainer";
+import { useEffect } from "react";
 
 function generateRandomNumber(min,max,exclude)
-{
+{   
+    console.log("genrateRandom number called for");
+    console.log(min, " ", max);
+
+    if(max-min <= 1)
+    {
+        return min !== exclude ? min: max;
+    }
+
     const rndNum = Math.floor(Math.random()*(max-min))+min;
 
     if(rndNum==exclude)
@@ -19,10 +28,17 @@ function generateRandomNumber(min,max,exclude)
 let minNum = 1;
 let maxNum = 100;
 
-function GameScreen({userNumber})
+function GameScreen({userNumber, onGameOver})
 {   
     const initialGuess = generateRandomNumber(1,100,userNumber)
     const [currentGuess, setCurrentGuess] = useState(initialGuess);
+
+    useEffect(() => {
+        if(currentGuess == userNumber)
+        {
+            onGameOver();
+        }
+    }, [currentGuess, userNumber, onGameOver]);
 
     function nextGuessHandler(direction)
     {
@@ -32,17 +48,26 @@ function GameScreen({userNumber})
                 Alert.alert("Don't lie!","You know that this is wrong...",[{text: 'Okay', style: 'destructive'}]);
                 return;
             }
+        
+        console.log("direction is ", direction)
+        console.log(minNum, " ", maxNum);
+
+        // if(currentGuess == userNumber)
+        // {   
+        //     console.log("Found")
+        //     onGameOver(true);
+        //     return;
+        // }            
 
         if(direction == 'lower')
         {
-            maxNum = currentGuess-1;
+            maxNum = currentGuess;
         }
         else if(direction == 'higher')
         {
             minNum = currentGuess+1;
         }
 
-        console.log(minNum, " ", maxNum);
 
         let nextGuess = generateRandomNumber(minNum,maxNum,currentGuess);
         setCurrentGuess(nextGuess);
