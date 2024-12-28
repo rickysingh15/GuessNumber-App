@@ -6,6 +6,8 @@ import GameScreen from "./GameScreen";
 
 import colors from "../constants/colors";
 import Title from "../components/ui/Title";
+import Card from "../components/ui/Card";
+import InstructionText from "../components/ui/InstructionText";
 
 function StartGameScreen({onPickedNumber})
 {
@@ -43,8 +45,10 @@ function StartGameScreen({onPickedNumber})
     return (
         <View style={styles.rootContainer}>
             <Title>Guess My Number</Title>
-            <View style={styles.inputContainer}>
-                <Text style={styles.textContainer}>Enter a Number</Text>
+            <Card>
+            {/* <View style={styles.inputContainer}> */}
+                {/* <Text style={styles.textContainer}>Enter a Number</Text> */}
+                <InstructionText>Enter a Number</InstructionText>
                 <TextInput style={styles.numberInput}
                         maxLength={2}
                         keyboardType='number-pad'
@@ -60,7 +64,8 @@ function StartGameScreen({onPickedNumber})
                         <PrimaryButton onPress={confirmInputHandler}>Confirm</PrimaryButton>
                     </View>
                 </View>
-            </View>
+            {/* </View> */}
+            </Card>
         </View>
     );
 }
@@ -71,22 +76,6 @@ const styles = StyleSheet.create({
     rootContainer:{
         flex:1,
         marginTop:100,
-        alignItems: 'center'
-    },
-
-    inputContainer:{
-        marginTop:100,
-        padding:16,
-        backgroundColor: colors.primary800,
-        borderRadius: 8,
-        marginHorizontal: 24,
-        elevation: 20,
-        shadowColor: 'black',
-        shadowOffset: {width: 0, height: 2}, 
-        shadowRadius: 6,
-        shadowOpacity: 0.25,
-        flexDirection: 'column',
-        justifyContent: 'center',
         alignItems: 'center'
     },
 
