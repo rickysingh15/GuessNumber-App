@@ -3,6 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
 import {useFonts} from 'expo-font';
 import AppLoading from 'expo-app-loading';
+import { StatusBar } from 'expo-status-bar';
 
 import StartGameScreen from './screens/StartGameScreen';
 import GameScreen from './screens/GameScreen';
@@ -12,6 +13,7 @@ export default function App() {
 
 	const [pickedNumber, setPickedNumber] = useState();
 	const [isGameOver, setIsGameOver] = useState(false);
+	const [tries, setTries] = useState(0);
 
 	const [fontsLoaded] = useFonts({
 		'open-sans': require('./assets/fonts/OpenSans-Regular.ttf'),
@@ -20,7 +22,7 @@ export default function App() {
 
 	if(!fontsLoaded)
 	{
-		return <AppLoading/>;
+		return <AppLoading/>; 
 	}
 
 	function pickedNumberHandler(inputNumber)
@@ -33,6 +35,7 @@ export default function App() {
 		console.log("Reseting called")
 		setPickedNumber();
 		setIsGameOver(false);
+		setTries(0);
 	}
 
 	function gameOverHandler()
@@ -40,22 +43,35 @@ export default function App() {
 		setIsGameOver(true);
 	}
 
+	function tryIncHandler()
+    {
+		console.log("tryIncHandler called");
+        setTries(prevTries => prevTries+1);  
+    }
+
 
 	let screen = <StartGameScreen onPickedNumber={pickedNumberHandler}/>;
 
-	if(isGameOver) screen = <GameOverScreen onGameOver={reseting}/>
-	else if(pickedNumber) screen = <GameScreen userNumber={pickedNumber} onGameOver = {gameOverHandler}/>
+	if(isGameOver) screen = <GameOverScreen onGameOver={reseting}
+											numTries={tries}
+											pickedNumber={pickedNumber}/>
+	else if(pickedNumber) screen = <GameScreen userNumber={pickedNumber}
+											   onGameOver = {gameOverHandler}
+											   TriesHandler = {tryIncHandler} />
 
 
 	return (
-		<LinearGradient colors={[colors.primary700, colors.accent500]}style={styles.rootScreen}>
-			<ImageBackground source={require('./assets/images/background.png')}
-							 resizeMode="cover"
-							 style={styles.rootScreen}
-							 imageStyle={styles.backgroundImage}>
-				<SafeAreaView style={styles.rootScreen}>{screen}</SafeAreaView>
-			</ImageBackground>
-		</LinearGradient>
+		<>
+			<StatusBar style="light"/>
+			<LinearGradient colors={[colors.primary700, colors.accent500]}style={styles.rootScreen}>
+				<ImageBackground source={require('./assets/images/background.png')}
+								resizeMode="cover"
+								style={styles.rootScreen}
+								imageStyle={styles.backgroundImage}>
+					<SafeAreaView style={styles.rootScreen}>{screen}</SafeAreaView>
+				</ImageBackground>
+			</LinearGradient>
+		</>
 	);
 }
 
